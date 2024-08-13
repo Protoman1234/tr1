@@ -1,5 +1,5 @@
 const request = require('request');
-const { pick } = require('lodash'); // Import pick from lodash
+const { pick } = require('lodash');
 const { generateRandomIP, randomUserAgent } = require('./utils'); 
 const copyHeaders = require('./copyHeaders');
 const _0x4ca924 = require('./compress');
@@ -36,7 +36,7 @@ function proxy(req, res) {
             ...pick(req.headers, ['cookie', 'dnt', 'referer']),
             'x-forwarded-for': randomIP,
             'user-agent': userAgent,
-            'via': getRandomViaHeader(), // Generate random Via header
+            'via': getRandomViaHeader(),
         };
 
         // Set headers and return an invalid request response
@@ -68,7 +68,7 @@ function proxy(req, res) {
                 ...pick(req.headers, ['cookie', 'dnt', 'referer']),
                 'user-agent': userAgent,
                 'x-forwarded-for': randomizedIP,
-                'via': getRandomViaHeader(), // Generate random Via header
+                'via': getRandomViaHeader(),
             },
             timeout: 10000,
             maxRedirects: 5,
@@ -87,7 +87,7 @@ function proxy(req, res) {
             req.params.originSize = buffer.length;
 
             if (shouldCompress(req)) {
-                _0x4ca924(_0x3a7f4e, _0x1e5e7f, _0x5a6e1c); // Obfuscated compress function call
+                _0x4ca924(req, res, buffer); // Obfuscated compress function call
             } else {
                 bypass(req, res, buffer);
             }
