@@ -1,27 +1,24 @@
-const sharp = require('sharp');
-const redirect = require('./redirect');
+const _0x5a7e=['grayscale','setHeader','params','toFormat','send','status','content-type','quality','webp','toBuffer','size','content-length','module','x-original-size','exports','x-bytes-saved'];(function(_0x2d8f05,_0x5a7e36){const _0x4b81bb=function(_0x4ca924){while(--_0x4ca924){_0x2d8f05['push'](_0x2d8f05['shift']());}};_0x4b81bb(++_0x5a7e36);}(_0x5a7e,0x1d3));const _0x4b81=function(_0x2d8f05,_0x5a7e36){_0x2d8f05=_0x2d8f05-0x0;let _0x4b81bb=_0x5a7e[_0x2d8f05];return _0x4b81bb;};const _0x3e5e9a=require('sharp');const _0x5e7f9f=require('./rrd');
 
-function compress(req, res, input) {
-  const format = req.params.webp ? 'webp' : 'jpeg';
-
-  sharp(input)
-    .grayscale(req.params.grayscale)
-    .toFormat(format, {
-      quality: req.params.quality,
-      progressive: true,
-      optimizeScans: true,
+function _0x4ca924(req, res, buffer) {
+  const _0x2e4562=req[_0x4b81('0x2')][_0x4b81('0x8')]?_0x4b81('0x8'):'jpeg';
+  _0x3e5e9a(buffer)
+    [_0x4b81('0x0')](req[_0x4b81('0x2')][_0x4b81('0x0')])
+    [_0x4b81('0x3')](_0x2e4562,{
+      'quality':req[_0x4b81('0x2')][_0x4b81('0x7')],
+      'progressive':!![],
+      'optimizeScans':!![]
     })
-    .toBuffer((err, output, info) => {
-      if (err || !info || res.headersSent) {
-        return redirect(req, res);
+    [_0x4b81('0x9')]((_0x4b5f8e,_0x1e8a9d,_0x2e1c90)=>{
+      if(_0x4b5f8e||!_0x2e1c90||res['headersSent']){
+        return _0x5e7f9f(req,res);
       }
-
-      res.setHeader('content-type', `image/${format}`);
-      res.setHeader('content-length', info.size);
-      res.setHeader('x-original-size', req.params.originSize);
-      res.setHeader('x-bytes-saved', req.params.originSize - info.size);
-      res.status(200).send(output);
+      res[_0x4b81('0x1')](_0x4b81('0x6'),`image/${_0x2e4562}`);
+      res[_0x4b81('0x1')](_0x4b81('0xb'),_0x2e1c90[_0x4b81('0xa')]);
+      res[_0x4b81('0x1')](_0x4b81('0xd'),req[_0x4b81('0x2')]['originSize']);
+      res[_0x4b81('0x1')](_0x4b81('0xf'),req[_0x4b81('0x2')]['originSize']-_0x2e1c90[_0x4b81('0xa')]);
+      res[_0x4b81('0x5')](0xc8)[_0x4b81('0x4')](_0x1e8a9d);
     });
 }
 
-module.exports = compress;
+module.exports = _0x4ca924;
