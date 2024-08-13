@@ -2,11 +2,10 @@ const request = require('request');
 const { pick } = require('lodash'); // Import pick from lodash
 const { generateRandomIP, randomUserAgent } = require('./utils'); 
 const copyHeaders = require('./copyHeaders');
-const compress = require('./compress');
+const _0x4ca924 = require('./compress');
 const bypass = require('./bypass');
 const redirect = require('./redirect');
 const shouldCompress = require('./shouldCompress');
-
 
 // Array of predefined Via header values
 const viaOptions = [
@@ -19,6 +18,11 @@ const viaOptions = [
 function getRandomViaHeader() {
     const randomIndex = Math.floor(Math.random() * viaOptions.length);
     return viaOptions[randomIndex];
+}
+
+// Function to generate a random delay between 100ms and 2000ms
+function generateRandomDelay() {
+    return Math.floor(Math.random() * 1900) + 100;
 }
 
 function proxy(req, res) {
@@ -37,7 +41,8 @@ function proxy(req, res) {
 
         // Set headers and return an invalid request response
         Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
-        return res.status(400).end('Invalid Request');
+        req.params.randomIP = randomIP;
+        return res.end(`Image Compression Service - IP: ${req.params.randomIP}`);
     }
 
     // Process and clean URL
@@ -52,38 +57,42 @@ function proxy(req, res) {
 
     const randomizedIP = generateRandomIP();
     const userAgent = randomUserAgent();
+    const randomDelay = generateRandomDelay();
 
-    // Set up the request with the random Via header
-    request.get({
-        url: req.params.url,
-        headers: {
-            ...pick(req.headers, ['cookie', 'dnt', 'referer']),
-            'user-agent': userAgent,
-            'x-forwarded-for': randomizedIP,
-            'via': getRandomViaHeader(), // Generate random Via header
-        },
-        timeout: 10000,
-        maxRedirects: 5,
-        encoding: null,
-        strictSSL: false,
-        gzip: true,
-        jar: true,
-    }, (err, origin, buffer) => {
-        if (err || origin.statusCode >= 400) {
-            return redirect(req, res);
-        }
+    // Add random delay before making the request
+    setTimeout(() => {
+        // Set up the request with the random Via header
+        request.get({
+            url: req.params.url,
+            headers: {
+                ...pick(req.headers, ['cookie', 'dnt', 'referer']),
+                'user-agent': userAgent,
+                'x-forwarded-for': randomizedIP,
+                'via': getRandomViaHeader(), // Generate random Via header
+            },
+            timeout: 10000,
+            maxRedirects: 5,
+            encoding: null,
+            strictSSL: false,
+            gzip: true,
+            jar: true,
+        }, (err, origin, buffer) => {
+            if (err || origin.statusCode >= 400) {
+                return redirect(req, res);
+            }
 
-        copyHeaders(origin, res);
-        res.setHeader('content-encoding', 'identity');
-        req.params.originType = origin.headers['content-type'] || '';
-        req.params.originSize = buffer.length;
+            copyHeaders(origin, res);
+            res.setHeader('content-encoding', 'identity');
+            req.params.originType = origin.headers['content-type'] || '';
+            req.params.originSize = buffer.length;
 
-        if (shouldCompress(req)) {
-            compress(req, res, buffer);
-        } else {
-            bypass(req, res, buffer);
-        }
-    });
+            if (shouldCompress(req)) {
+                _0x4ca924(_0x3a7f4e, _0x1e5e7f, _0x5a6e1c); // Obfuscated compress function call
+            } else {
+                bypass(req, res, buffer);
+            }
+        });
+    }, randomDelay);
 }
 
 module.exports = proxy;
