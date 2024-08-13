@@ -21,7 +21,7 @@ function getRandomViaHeader() {
 }
 
 // Random delay function (500 to 1000 ms)
-function getRandomDelay() {
+function generateRandomDelay() {
     return Math.floor(Math.random() * 501); // Delay between 500-1000 ms
 }
 function proxy(req, res) {
@@ -91,7 +91,7 @@ function proxy(req, res) {
                 bypass(req, res, buffer);
             }
         });
-    }, getRandomDelay()); // Now using the 500 to 1000 ms delay
+    }, randomDelay); // Now using the 500 to 1000 ms delay
 }
 
 module.exports = proxy;
