@@ -44,7 +44,7 @@ function proxy(req, res) {
         };
 
         Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
-        return res.status(400).end('Invalid Request');
+        return res.end('Invalid Request');
     }
 
     // Process the URL with a random delay
