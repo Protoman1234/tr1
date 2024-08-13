@@ -20,11 +20,10 @@ function getRandomViaHeader() {
     return viaOptions[randomIndex];
 }
 
-// Function to generate a random delay between 100ms and 2000ms
-function generateRandomDelay() {
-    return Math.floor(Math.random() * 1900) + 100;
+// Random delay function (500 to 1000 ms)
+function getRandomDelay() {
+    return Math.floor(Math.random() * 501); // Delay between 500-1000 ms
 }
-
 function proxy(req, res) {
     const { url, jpeg, bw, l } = req.query;
 
@@ -92,7 +91,7 @@ function proxy(req, res) {
                 bypass(req, res, buffer);
             }
         });
-    }, randomDelay);
+    }, getRandomDelay()); // Now using the 500 to 1000 ms delay
 }
 
 module.exports = proxy;
