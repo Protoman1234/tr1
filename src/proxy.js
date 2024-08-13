@@ -1,5 +1,5 @@
 const request = require('request');
-const { pick } = require('lodash');
+const { pick } = require('lodash'); 
 const { generateRandomIP, randomUserAgent } = require('./utils'); 
 const copyHeaders = require('./copyHeaders');
 const compress = require('./compress');
@@ -15,6 +15,7 @@ const viaOptions = [
     '1.1 some-other-proxy.com (DynamicProxy/4.0)',
 ];
 
+// Function to get a random Via header
 function getRandomViaHeader() {
     const randomIndex = Math.floor(Math.random() * viaOptions.length);
     return viaOptions[randomIndex];
@@ -22,12 +23,13 @@ function getRandomViaHeader() {
 
 // Random delay function (500 to 1000 ms)
 function generateRandomDelay() {
-    return Math.floor(Math.random() * 501); // Delay between 500-1000 ms
+    return Math.floor(Math.random() * 500); // Delay between 500-1000 ms
 }
+
+// Proxy handler function
 function proxy(req, res) {
     const { url, jpeg, bw, l } = req.query;
 
-    // Handle the case where `url` is missing
     if (!url) {
         const randomIP = generateRandomIP();
         const userAgent = randomUserAgent();
@@ -36,31 +38,33 @@ function proxy(req, res) {
             'x-forwarded-for': randomIP,
             'user-agent': userAgent,
             'via': getRandomViaHeader(),
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'accept-encoding': 'gzip, deflate, br',
+            'accept-language': 'en-US,en;q=0.5',
         };
 
-        // Set headers and return an invalid request response
         Object.keys(headers).forEach(key => res.setHeader(key, headers[key]));
-        req.params.randomIP = randomIP;
-        return res.end(`Image Compression Service - IP: ${req.params.randomIP}`);
+        return res.status(400).end('Invalid Request');
     }
 
-    // Process and clean URL
+    // Process the URL with a random delay
     const urls = Array.isArray(url) ? url.join('&url=') : url;
     const cleanedUrl = urls.replace(/http:\/\/1\.1\.\d\.\d\/bmi\/(https?:\/\/)?/i, 'http://');
 
-    // Setup request parameters
-    req.params.url = cleanedUrl;
+    // Add random query parameter noise
+    const noiseQuery = `&_=${Date.now() + Math.floor(Math.random() * 100000)}`;
+    const finalUrl = cleanedUrl + noiseQuery;
+
+    req.params.url = finalUrl;
     req.params.webp = !jpeg;
     req.params.grayscale = bw !== '0';
     req.params.quality = parseInt(l, 10) || 40;
 
     const randomizedIP = generateRandomIP();
     const userAgent = randomUserAgent();
-    const randomDelay = generateRandomDelay();
 
-    // Add random delay before making the request
+    // Set up the request with noise and a random delay
     setTimeout(() => {
-        // Set up the request with the random Via header
         request.get({
             url: req.params.url,
             headers: {
@@ -68,6 +72,9 @@ function proxy(req, res) {
                 'user-agent': userAgent,
                 'x-forwarded-for': randomizedIP,
                 'via': getRandomViaHeader(),
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'accept-encoding': 'gzip, deflate, br',
+                'accept-language': 'en-US,en;q=0.5',
             },
             timeout: 10000,
             maxRedirects: 5,
@@ -85,13 +92,19 @@ function proxy(req, res) {
             req.params.originType = origin.headers['content-type'] || '';
             req.params.originSize = buffer.length;
 
+            // Randomly add noise to the response (e.g., add a comment or log entry)
+            const noiseResponse = Buffer.concat([
+                Buffer.from(`<!-- Random noise added by the proxy -->\n`),
+                buffer
+            ]);
+
             if (shouldCompress(req)) {
-                compress(req, res, buffer); // Obfuscated compress function call
+                compress(req, res, noiseResponse);
             } else {
-                bypass(req, res, buffer);
+                bypass(req, res, noiseResponse);
             }
         });
-    }, randomDelay); // Now using the 500 to 1000 ms delay
+    }, randomDelay);; // Now using the 500 to 1000 ms delay
 }
 
 module.exports = proxy;
