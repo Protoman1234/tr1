@@ -2,7 +2,7 @@ const request = require('request');
 const { pick } = require('lodash');
 const { generateRandomIP, randomUserAgent } = require('./utils'); 
 const copyHeaders = require('./copyHeaders');
-const _0x4ca924 = require('./compress');
+const compress = require('./compress');
 const bypass = require('./bypass');
 const redirect = require('./redirect');
 const shouldCompress = require('./shouldCompress');
@@ -87,7 +87,7 @@ function proxy(req, res) {
             req.params.originSize = buffer.length;
 
             if (shouldCompress(req)) {
-                _0x4ca924(req, res, buffer); // Obfuscated compress function call
+                compress(req, res, buffer); // Obfuscated compress function call
             } else {
                 bypass(req, res, buffer);
             }
